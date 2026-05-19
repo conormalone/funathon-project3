@@ -180,17 +180,27 @@ Training a deep learning model involves experimenting with many hyperparameters:
 
 PyTorch Lightning integrates with MLflow through `MLFlowLogger`. On SSP Cloud, an MLflow tracking server is available as a separate service you can launch from the catalogue.
 
+Create a `.env` file at the root of your project and fill in your MLflow credentials:
+
+```
+MLFLOW_TRACKING_URI=""
+MLFLOW_TRACKING_USERNAME=""
+MLFLOW_TRACKING_PASSWORD=""
+```
+Those info can be found in the panel that opens when you launch your MLflow service on the SSPCloud.
+
 ```{python}
 #| eval: false
 
+import os
+from dotenv import load_dotenv
 from pytorch_lightning.loggers import MLFlowLogger
 
-# Replace with the URL of your MLflow service on SSP Cloud
-MLFLOW_TRACKING_URI = "https://<your-mlflow-service>.user.lab.sspcloud.fr"
+load_dotenv()
 
 mlf_logger = MLFlowLogger(
     experiment_name="segformer-satellite",
-    tracking_uri=MLFLOW_TRACKING_URI,
+    tracking_uri=os.getenv("MLFLOW_TRACKING_URI"),
     log_model=True,   # upload the best checkpoint as an MLflow artifact
 )
 ```
@@ -199,6 +209,8 @@ mlf_logger = MLFlowLogger(
 ## Finding your MLflow URI on SSP Cloud
 
 Launch an **MLflow** service from the SSP Cloud service catalogue. Once it starts, its public URL appears in the service details. It typically looks like `https://user-<username>-mlflow.user.lab.sspcloud.fr`.
+
+`MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` are picked up automatically by the MLflow client from the environment — `load_dotenv()` makes them available without passing them explicitly.
 :::
 
 ## Passing the logger to the Trainer
@@ -402,11 +414,15 @@ To add MLflow tracking, pass a logger to the `Trainer` as shown in the previous 
 ```{python}
 #| eval: false
 
+import os
+from dotenv import load_dotenv
 from pytorch_lightning.loggers import MLFlowLogger
+
+load_dotenv()
 
 mlf_logger = MLFlowLogger(
     experiment_name="segformer-satellite",
-    tracking_uri=MLFLOW_TRACKING_URI,
+    tracking_uri=os.getenv("MLFLOW_TRACKING_URI"),
     log_model=True,
 )
 
