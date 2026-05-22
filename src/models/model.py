@@ -5,7 +5,7 @@ SegFormer model wrappers.
   `SegformerPreTrainedModel` that exposes a cleaner `forward()` and
   freeze/unfreeze helpers for transfer learning.
 - `SegformerB5` is a factory: it fetches the CLC+ label mapping from S3,
-  patches the `nvidia/mit-b5` config for 14-band input and 10 land-cover
+  patches the `nvidia/mit-b5` config for 14-channel input (12 L2A spectral bands + NDVI + NDWI) and 10 land-cover
   classes, then loads the pretrained ImageNet weights.
 """
 
@@ -96,7 +96,7 @@ class SegformerB5(SemanticSegmentationSegformer):
         label2id = {v: k for k, v in id2label.items()}
 
         config = SegformerConfig.from_pretrained("nvidia/mit-b5")
-        config.num_channels = int(n_bands)  # Sentinel-2 has 14 bands, not 3 (RGB)
+        config.num_channels = int(n_bands)  # Pre-baked GeoTIFFs: 14 channels (12 L2A spectral + NDVI + NDWI), vs 3 for RGB
         config.num_labels = len(id2label)
         config.id2label = id2label
         config.label2id = label2id
