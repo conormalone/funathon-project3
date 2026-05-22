@@ -119,7 +119,8 @@ stats_tile["share_pct"] = (__ / total_km2 * 100).round(2)  # TODO: column to nor
 )
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Use `"count"` for `n_polygons`, `"sum"` for totals, `"mean"` and `"max"`
   for polygon size statistics.
@@ -128,12 +129,12 @@ stats_tile["share_pct"] = (__ / total_km2 * 100).round(2)  # TODO: column to nor
 - Pass `rowname_col="class_name"` to `GT()` to use class names as row labels.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 from great_tables import GT, style, loc
 
 stats_tile = (
@@ -247,7 +248,8 @@ summary_df = pd.DataFrame({
 )
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Sealed = label 1, Forest = labels 2, 3, 4, Agricultural = labels 6, 7,
   Water = label 10.
@@ -255,12 +257,12 @@ summary_df = pd.DataFrame({
 - Build a small `pd.DataFrame` before passing it to `GT()`.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 import pandas as pd
 
 sealed_km2 = stats_tile.loc[stats_tile["label"] == 1,             "total_area_km2"].sum()
@@ -334,18 +336,19 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Index on `"class_name"`, plot `"total_area_km2"`.
 - `ax.set_xlabel("Area (km²)")` and give a descriptive title.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(8, 4))
@@ -470,19 +473,20 @@ comparison = pd.concat([__, __], axis=1).fillna(0).reset_index()  # TODO: tile_s
 )
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Same pattern as Exercise 1 — just replace `gdf_tile` with `gdf_nuts`.
 - Rename the share columns `"tile_share_pct"` and `"nuts3_share_pct"`.
 - Call `.reset_index()` on the comparison DataFrame before passing to `GT()`.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 stats_nuts = (
     gdf_nuts.groupby(["label", "class_name"])
     .agg(
@@ -598,18 +602,19 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Left panel: `"total_area_km2"`, label `"Area (km²)"`.
 - Right panel: `"share_pct"`, label `"Share (%)"`.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 stats_nuts.set_index("class_name")["total_area_km2"].sort_values().plot(
@@ -756,7 +761,8 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - The 2021 tile filename is identical to 2024 — only the year in the path
   changes.
@@ -768,12 +774,12 @@ plt.show()
   domain=[-5, 5])` colours losses red and gains green automatically.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 image_filepath_2021 = (
     "projet-funathon/"
     "2026/project3/data/images/LU000/2021/"
@@ -991,7 +997,8 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - The response key for `/predict_nuts` is `"predictions"`.
 - `compute_stats()` is already defined in Exercise 6 — reuse it directly.
@@ -1001,12 +1008,12 @@ plt.show()
 - For the change bar chart: `colors = ["green" if v >= 0 else "red" for v in ...]`.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 response_nuts_2021 = requests.get(
     f"{api_url}/predict_nuts",
     params={"nuts_id": "LU000", "year": 2021},
@@ -1143,33 +1150,34 @@ plt.tight_layout()
 plt.show()
 ```
 
-## Interactive map — forest loss (2021 → 2024)
+## Interactive map — forest gain and loss (2021 → 2024)
 
 The statistics above show where forest cover has changed globally across the
 region. This map goes further by showing **where exactly** forest has
-disappeared between 2021 and 2024. Using a geometric `overlay()`, we isolate
-only the areas that were forested in 2021 but are no longer in 2024 —
-providing a spatially precise picture of deforestation hotspots.
+appeared or disappeared between 2021 and 2024. Using a geometric `overlay()`,
+we isolate areas that genuinely gained or lost tree cover — the two layers
+are geometrically disjoint by construction, so there is no overlap.
 
 ::: {.callout-caution}
-## Exercise 8 — Map forest loss (2021 → 2024) with a heatmap
+## Exercise 8 — Map forest gain and loss (2021 → 2024) with a heatmap
 
-**Goal:** Display the spatial distribution of forest loss across the NUTS3
-region using a single `folium.plugins.HeatMap` layer. Forest polygons
+**Goal:** Display the spatial distribution of forest gain and loss across the
+NUTS3 region using two `folium.plugins.HeatMap` layers. Forest polygons
 (labels 2, 3, 4) are compared geometrically between 2021 and 2024 using
-`.overlay()` to isolate areas that genuinely lost tree cover.
+`.overlay()`. Because gained and lost areas are computed as geometric
+differences, the two layers are spatially disjoint — no colour overlap.
 
 **Steps:**
 
 1. Filter forest polygons (labels 2, 3, 4) from both years in EPSG:3035
 2. Dissolve each year into a single geometry with `.dissolve()`
-3. Use `.overlay(..., how="difference")` to compute forest lost between
-   2021 and 2024
-4. Recompute `area_km2` after the overlay and filter out micro-polygons
-5. Reproject to EPSG:4326, compute centroids, build `heat_data` as
-   `[lat, lon, area_km2]`
-6. Create a `folium.Map` and add a single `HeatMap` layer with a green
-   gradient
+3. Use `.overlay(..., how="difference")` twice: once for loss (in 2021, not
+   in 2024) and once for gain (in 2024, not in 2021)
+4. Recompute `area_km2` after each overlay and filter out micro-polygons
+5. Reproject to EPSG:4326, compute centroids, build `heat_lost` and
+   `heat_gained` as `[lat, lon, area_km2]` lists
+6. Create a `folium.Map` and add both `HeatMap` layers with distinct
+   gradients, then add a `LayerControl`
 :::
 
 ```{python}
@@ -1193,54 +1201,74 @@ forest_2024 = (
     .reset_index(drop=True)
 )
 
-# Forest present in 2021 but absent in 2024 = lost forest
-forest_lost = forest_2021.overlay(__, how="__")  # TODO: reference layer, method
+# Forest in 2021 but not 2024 = lost; forest in 2024 but not 2021 = gained
+forest_lost   = forest_2021.overlay(__, how="__")  # TODO: reference layer, method
+forest_gained = forest_2024.overlay(__, how="__")  # TODO: reference layer, method
 
 # Recompute areas and drop slivers
-forest_lost["area_km2"] = forest_lost.geometry.area / 1e6
-forest_lost = forest_lost[forest_lost["area_km2"] > __]  # TODO: threshold (float)
+for gdf in [forest_lost, forest_gained]:
+    gdf["area_km2"] = gdf.geometry.area / 1e6
+
+forest_lost   = forest_lost[forest_lost["area_km2"]     > __]  # TODO: threshold
+forest_gained = forest_gained[forest_gained["area_km2"] > __]  # TODO: threshold
 
 # Reproject and compute centroids
-forest_lost_wgs84 = forest_lost.to_crs("__")  # TODO: CRS
-forest_lost_wgs84["centroid"] = forest_lost_wgs84.geometry.centroid
+forest_lost_wgs84   = forest_lost.to_crs("__")    # TODO: CRS
+forest_gained_wgs84 = forest_gained.to_crs("__")  # TODO: CRS
 
-heat_data = [
+forest_lost_wgs84["centroid"]   = forest_lost_wgs84.geometry.centroid
+forest_gained_wgs84["centroid"] = forest_gained_wgs84.geometry.centroid
+
+heat_lost = [
     [row.centroid.__, row.centroid.__, row.area_km2]  # TODO: lat/lon attributes
     for _, row in forest_lost_wgs84.iterrows()
+]
+heat_gained = [
+    [row.centroid.__, row.centroid.__, row.area_km2]  # TODO: lat/lon attributes
+    for _, row in forest_gained_wgs84.iterrows()
 ]
 
 center = forest_lost_wgs84.geometry.centroid.union_all().centroid
 m = folium.Map(location=[center.y, center.x], zoom_start=__)  # TODO: zoom level
 
 HeatMap(
-    __,           # TODO: heat_data
+    __,           # TODO: heat_lost
     radius=__, blur=__, max_zoom=13,
-    gradient={0.4: "lightgreen", 0.7: "forestgreen", 1.0: "darkgreen"},
+    gradient={0.4: "lightyellow", 0.65: "orange", 1.0: "red"},
     name="Forest loss 2021→2024",
+).add_to(m)
+
+HeatMap(
+    __,           # TODO: heat_gained
+    radius=__, blur=__, max_zoom=13,
+    gradient={0.4: "lightgreen", 0.65: "forestgreen", 1.0: "darkgreen"},
+    name="Forest gain 2021→2024",
 ).add_to(m)
 
 folium.LayerControl().add_to(m)
 m
 ```
 
-::: {.callout-tip collapse="true" title="Hint"}
+::: {.callout-tip collapse="true"}
+## Hint
 
 - Forest labels are 2, 3, 4 — use `.isin([2, 3, 4])`.
 - `.dissolve()` merges all forest polygons of a year into one multipolygon,
-  which makes the overlay much faster and avoids duplicate intersections.
-- `forest_2021.overlay(forest_2024, how="difference")` returns the parts of
-  2021 forest not covered by 2024 forest — i.e. areas that lost tree cover.
+  making the overlay faster and avoiding duplicate intersections.
+- `forest_2021.overlay(forest_2024, how="difference")` → lost (in 2021, not 2024).
+- `forest_2024.overlay(forest_2021, how="difference")` → gained (in 2024, not 2021).
+- The two resulting layers are geometrically disjoint — no colour overlap.
 - Use `1e-6` as the minimum area threshold to drop topological slivers.
 - Reproject to `"EPSG:4326"` before computing centroids for Folium.
 - `radius=15` and `blur=20` are good starting values.
 :::
 
-::: {.callout-tip collapse="true" title="Solution"}
+::: {.callout-tip collapse="true"}
+## Solution
 
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
 import folium
 from folium.plugins import HeatMap
 
@@ -1259,27 +1287,45 @@ forest_2024 = (
     .reset_index(drop=True)
 )
 
-forest_lost = forest_2021.overlay(forest_2024, how="difference")
+forest_lost   = forest_2021.overlay(forest_2024, how="difference")
+forest_gained = forest_2024.overlay(forest_2021, how="difference")
 
-forest_lost["area_km2"] = forest_lost.geometry.area / 1e6
-forest_lost = forest_lost[forest_lost["area_km2"] > 1e-6]
+forest_lost["area_km2"]   = forest_lost.geometry.area   / 1e6
+forest_gained["area_km2"] = forest_gained.geometry.area / 1e6
 
-forest_lost_wgs84 = forest_lost.to_crs("EPSG:4326")
-forest_lost_wgs84["centroid"] = forest_lost_wgs84.geometry.centroid
+forest_lost   = forest_lost[forest_lost["area_km2"]     > 1e-6]
+forest_gained = forest_gained[forest_gained["area_km2"] > 1e-6]
 
-heat_data = [
+forest_lost_wgs84   = forest_lost.to_crs("EPSG:4326")
+forest_gained_wgs84 = forest_gained.to_crs("EPSG:4326")
+
+forest_lost_wgs84["centroid"]   = forest_lost_wgs84.geometry.centroid
+forest_gained_wgs84["centroid"] = forest_gained_wgs84.geometry.centroid
+
+heat_lost = [
     [row.centroid.y, row.centroid.x, row.area_km2]
     for _, row in forest_lost_wgs84.iterrows()
+]
+heat_gained = [
+    [row.centroid.y, row.centroid.x, row.area_km2]
+    for _, row in forest_gained_wgs84.iterrows()
 ]
 
 center = forest_lost_wgs84.geometry.centroid.union_all().centroid
 m = folium.Map(location=[center.y, center.x], zoom_start=11)
 
 HeatMap(
-    heat_data,
+    heat_lost,
     radius=15, blur=20, max_zoom=13,
-    gradient={0.4: "lightgreen", 0.7: "forestgreen", 1.0: "darkgreen"},
+    gradient={0.4: "lightyellow", 0.65: "orange", 1.0: "red"},
     name="Forest loss 2021→2024",
+).add_to(m)
+
+HeatMap(
+    heat_gained,
+    radius=15, blur=20, max_zoom=13,
+    gradient={0.4: "lightgreen", 0.65: "forestgreen", 1.0: "darkgreen"},
+    name="Forest gain 2021→2024",
 ).add_to(m)
 
 folium.LayerControl().add_to(m)
