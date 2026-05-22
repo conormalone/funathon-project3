@@ -38,24 +38,19 @@ def filter_indices_from_labels(
     label_paths: List[str],
     lower_threshold: float,
     upper_threshold: float,
-    type_labeler: str,
 ) -> List[int]:
     """
-    Get indices to be used in a filter to keep only
-    data points with a rate of building annotated pixels >
-    `lower_threshold` and <= `upper_threshold`.
+    Return label indices whose built-up rate falls in `(lower, upper]`.
 
-    Args:
-        label_paths (List[str]): Paths to labels.
-        lower_threshold (float): Lower threshold on building rate.
-        upper_threshold (float): Upper threshold on building rate.
-        type_labeler (str): Type of labeler.
-
-    Returns:
-        List[int]: Indices of selected labels.
+    For CLC+ Backbone labels, class id 1 ("Sealed") is the built-up category,
+    so we count pixels equal to 1. With permissive thresholds (e.g.
+    ``-1.0, 2.0``) the function is a pass-through over all tiles — useful as a
+    hook to later restrict training to e.g. urban-heavy patches by tightening
+    the bounds.
     """
 
-    building_label = 1 if type_labeler == "BDTOPO" else 0
+    # CLC+ Backbone: class 1 = Sealed (the project's built-up equivalent).
+    building_label = 1
 
     indices = []
     for idx, path in enumerate(label_paths):

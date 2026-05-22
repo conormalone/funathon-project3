@@ -1389,7 +1389,7 @@ m
 ```{python}
 #| eval: true
 #| echo: true
-#| include: false
+#| include: true
 import folium
 from folium.plugins import HeatMap
 
@@ -1408,19 +1408,19 @@ forest_2024 = (
     .reset_index(drop=True)
 )
 
-forest_lost   = forest_2021.overlay(forest_2024, how="difference")
+forest_lost = forest_2021.overlay(forest_2024, how="difference")
 forest_gained = forest_2024.overlay(forest_2021, how="difference")
 
-forest_lost["area_km2"]   = forest_lost.geometry.area   / 1e6
+forest_lost["area_km2"] = forest_lost.geometry.area / 1e6
 forest_gained["area_km2"] = forest_gained.geometry.area / 1e6
 
-forest_lost   = forest_lost[forest_lost["area_km2"]     > 1e-6]
+forest_lost = forest_lost[forest_lost["area_km2"] > 1e-6]
 forest_gained = forest_gained[forest_gained["area_km2"] > 1e-6]
 
-forest_lost_wgs84   = forest_lost.to_crs("EPSG:4326")
+forest_lost_wgs84 = forest_lost.to_crs("EPSG:4326")
 forest_gained_wgs84 = forest_gained.to_crs("EPSG:4326")
 
-forest_lost_wgs84["centroid"]   = forest_lost_wgs84.geometry.centroid
+forest_lost_wgs84["centroid"] = forest_lost_wgs84.geometry.centroid
 forest_gained_wgs84["centroid"] = forest_gained_wgs84.geometry.centroid
 
 heat_lost = [
@@ -1437,20 +1437,23 @@ m = folium.Map(location=[center.y, center.x], zoom_start=11)
 
 HeatMap(
     heat_lost,
-    radius=15, blur=20, max_zoom=13,
+    radius=15,
+    blur=20,
+    max_zoom=13,
     gradient={0.4: "lightyellow", 0.65: "orange", 1.0: "red"},
     name="Forest loss 2021→2024",
 ).add_to(m)
 
 HeatMap(
     heat_gained,
-    radius=15, blur=20, max_zoom=13,
+    radius=15,
+    blur=20,
+    max_zoom=13,
     gradient={0.4: "lightgreen", 0.65: "forestgreen", 1.0: "darkgreen"},
     name="Forest gain 2021→2024",
 ).add_to(m)
 
 folium.LayerControl().add_to(m)
-m
 ```
 :::
 

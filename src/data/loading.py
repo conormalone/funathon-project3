@@ -21,41 +21,32 @@ from src.data.filter import filter_indices_from_labels
 
 def get_patchs_labels(
     from_s3: bool,
-    source: str,
-    dep: str,
+    nuts: str,
     year: str,
-    tiles_size: str,
-    type_labeler: str,
 ) -> Tuple[List[str], List[str]]:
     """
-    Get paths to patches and labels from S3 or local.
+    Resolve the list of (patch, label) paths for a given NUTS3 / year pair.
+
+    With `from_s3=True`, we only list file names from the bucket's index; the
+    actual reads are streamed lazily by callers. With `from_s3=False`, we
+    materialise tiles locally under `data/data-preprocessed/` (downloading them
+    once via `download_data`) and return their local paths.
     """
 
     if from_s3:
-        url_filenames = f"https://minio.lab.sspcloud.fr/projet-formation/diffusion/funathon/2026/project3/data/images/{nuts_3}/{year}/filename2bbox.parquet"
+        url_filenames = (
+            f"https://minio.lab.sspcloud.fr/projet-funathon/"
+            f"2026/project3/data/images/{nuts}/{year}/filename2bbox.parquet"
+        )
         df_filenames = pd.read_parquet(url_filenames)
         patchs = df_filenames.filename.tolist()
         labels = [filename.split('.')[0]+'.npy' for filename in patchs]
 
     else:
-        patchs_path = (
-            f"data/data-preprocessed/patchs/{source}/{dep}/{year}/{tiles_size}"
-        )
+        patchs_path = f"data/data-preprocessed/patchs/{nuts}/{year}"
+        labels_path = f"data/data-preprocessed/labels/{nuts}/{year}"
 
-        labels_path = (
-            f"data/data-preprocessed/labels/"
-            f"{type_labeler}/{source}/{dep}/{year}/{tiles_size}"
-        )
-
-        download_data(
-            patchs_path,
-            labels_path,
-            source,
-            dep,
-            year,
-            tiles_size,
-            type_labeler,
-        )
+        download_data(patchs_path, labels_path, nuts, year)
 
         patchs = [
             f"{patchs_path}/{f}"
@@ -83,11 +74,8 @@ def load_data(
 
         patches, labels = get_patchs_labels(
             from_s3=False,
-            source="S2",
-            dep=nuts,
+            nuts=nuts,
             year=year,
-            tiles_size="512",
-            type_labeler="default",
         )
 
         patches.sort()
@@ -122,7 +110,7 @@ def format_datasets(args_dict: dict) -> Tuple[List[str], List[str], dict]:
             patch_cmd = [
                 "mc",
                 "stat",
-                f"public/projet-formation/diffusion/funathon/2026/project3/data/images/{nuts}/{years}/",
+                f"public/projet-funathon/2026/project3/data/images/{nuts}/{years}/",
             ]
             subprocess.run(patch_cmd, check=True, stdout=devnull, stderr=devnull)  
 

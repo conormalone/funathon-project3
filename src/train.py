@@ -37,16 +37,17 @@ from src.data.dataset import SegmentationDataset
 
 CONFIG = {
     "train_regions": [
-        "AT332", "BE100", "BE251", "BG322", "CY000", "CZ072",
-        "DEA54", "DK041", "EE00A", "EL521", "ES612", "FI1C1",
-        "FRJ27", "FRK26", "HR050", "IE061", "ITI32", "LT028",
-        "LU000", "LV008", "MT001", "NL33C", "PL414", "PT16I",
-        "RO123", "SI035", "SK022"
+        "AT332",
+        "BE100",
+        "BE251",
+        "BG322",
+        "DEA54",
+        "FRJ27",
+        "LU000",
     ],
     "train_years": ["2018", "2021"],
-    "test_regions": ["BE100", "DEA54", "CY000", "LU000"],
+    "test_regions": ["BE100", "DEA54", "LU000"],
     "test_year": "2021",
-
     "batch_size": 32,
     "test_batch_size": 16,
     "epochs": 20,
@@ -61,6 +62,7 @@ CONFIG = {
 # ==========================================================
 # 2️⃣ UTILS
 # ==========================================================
+
 
 def set_seed(seed: int):
     torch.manual_seed(seed)
@@ -94,10 +96,7 @@ test_ids = build_region_year_list(
 
 # -------- Normalisation --------
 print("📊 Computing normalization...")
-mean, std = compute_global_normalization(
-    train_ids,
-    CONFIG["n_bands"]
-)
+mean, std = compute_global_normalization(train_ids, CONFIG["n_bands"])
 
 # -------- Chargement --------
 print("📂 Loading data...")
@@ -105,27 +104,25 @@ train_patches, train_labels = load_data(train_ids)
 test_patches, test_labels = load_data(test_ids)
 
 # -------- Transforms --------
-train_transform = build_transform(
-    mean, std, augment=True, resize=CONFIG["resize"]
-)
+train_transform = build_transform(mean, std, augment=True, resize=CONFIG["resize"])
 
-test_transform = build_transform(
-    mean, std, augment=False, resize=CONFIG["resize"]
-)
+test_transform = build_transform(mean, std, augment=False, resize=CONFIG["resize"])
 
 # -------- Dataset --------
 full_dataset = SegmentationDataset(
-    train_patches,
-    train_labels,
-    CONFIG["n_bands"],
-    train_transform,
+    patchs=train_patches,
+    labels=train_labels,
+    n_bands=CONFIG["n_bands"],
+    from_s3=False,
+    transform=train_transform,
 )
 
 test_dataset = SegmentationDataset(
-    test_patches,
-    test_labels,
-    CONFIG["n_bands"],
-    test_transform,
+    patchs=test_patches,
+    labels=test_labels,
+    n_bands=CONFIG["n_bands"],
+    from_s3=False,
+    transform=test_transform,
 )
 
 # -------- Split train / val --------

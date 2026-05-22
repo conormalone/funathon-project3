@@ -35,13 +35,15 @@ def get_lightning_module(
     return SegmentationModule(
         model=model,
         loss=loss,
-        optimizer_class=torch.optim.AdamW,
+        optimizer=torch.optim.AdamW,
         optimizer_params={"lr": lr},
-        scheduler_class=torch.optim.lr_scheduler.ReduceLROnPlateau,
+        scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau,
         scheduler_params={
             "mode": "min",
             "patience": 2,
+            # `monitor` matches the name logged by SegmentationModule.validation_step
+            # (`self.log("validation_loss", ...)`).
+            "monitor": "validation_loss",
         },
-        scheduler_monitor="val_loss",
         scheduler_interval="epoch",
     )

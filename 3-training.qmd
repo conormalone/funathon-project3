@@ -10,11 +10,6 @@ format:
 ::: {.callout-note}
 This section is **optional**. The rest of the project (Inference and Statistics) uses a pre-trained checkpoint you can download directly. Complete this section if you want to train the model yourself and experiment with hyperparameters.
 
-To install the additional training dependencies, run:
-
-```bash
-uv sync --extra training
-```
 :::
 
 # The Full Training Pipeline
@@ -49,6 +44,26 @@ callbacks = [
 
 ```{python}
 #| eval: false
+
+# Random placeholder loaders so the snippet runs standalone — replace with
+# real Sentinel-2 tile loaders for actual training (see Exercise 4 / src/train.py).
+import torch
+from torch.utils.data import DataLoader
+
+B, C, H, W = 4, 14, 64, 64
+dummy_dataset = [
+    {"pixel_values": torch.randn(C, H, W), "labels": torch.randint(0, 10, (H, W))}
+    for _ in range(16)
+]
+
+def collate(batch):
+    return {
+        "pixel_values": torch.stack([x["pixel_values"] for x in batch]),
+        "labels": torch.stack([x["labels"] for x in batch]),
+    }
+
+train_loader = DataLoader(dummy_dataset[:12], batch_size=B, collate_fn=collate)
+val_loader   = DataLoader(dummy_dataset[12:], batch_size=B, collate_fn=collate)
 
 trainer = pl.Trainer(
     max_epochs=20,
@@ -232,6 +247,26 @@ Launch an **MLflow** service from the SSP Cloud service catalogue. Once it start
 
 ```{python}
 #| eval: false
+
+# Same random placeholder loaders as in "Trainer and training loop" above —
+# replace with real loaders for actual training (see Exercise 4 / src/train.py).
+import torch
+from torch.utils.data import DataLoader
+
+B, C, H, W = 4, 14, 64, 64
+dummy_dataset = [
+    {"pixel_values": torch.randn(C, H, W), "labels": torch.randint(0, 10, (H, W))}
+    for _ in range(16)
+]
+
+def collate(batch):
+    return {
+        "pixel_values": torch.stack([x["pixel_values"] for x in batch]),
+        "labels": torch.stack([x["labels"] for x in batch]),
+    }
+
+train_loader = DataLoader(dummy_dataset[:12], batch_size=B, collate_fn=collate)
+val_loader   = DataLoader(dummy_dataset[12:], batch_size=B, collate_fn=collate)
 
 trainer = pl.Trainer(
     max_epochs=20,
@@ -454,11 +489,11 @@ The full production script is `intermediate_solutions/solution_step2/main.py`. I
 - **Data normalization**: band-wise mean and standard deviation are computed over the training set before building the transforms.
 - **Multiple test regions**: `trainer.test` evaluates on four held-out NUTS-3 regions to measure generalisation.
 
-To run it (requires a GPU and the training dependencies):
+To run it (requires a GPU ):
 
 ```bash
-cd intermediate_solutions/solution_step2
-uv run python main.py
+
+uv run python -m src/train.py
 ```
 
 To add MLflow tracking, pass a logger to the `Trainer` as shown in the previous section:
