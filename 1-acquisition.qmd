@@ -3048,7 +3048,7 @@ CDSE API credentials and are generated at
 <https://eodata-s3keysmanager.dataspace.copernicus.eu/>.
 
 ```bash
-uv run final_solution/download_region.py \
+uv run src/download_region.py \
     --nuts FR101 \
     --year 2021 \
     --s3-bucket my-bucket \
