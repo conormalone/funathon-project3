@@ -1,13 +1,11 @@
 ---
 lang: en-US
 title: "LU000 Land Cover Map (2024)"
-execute:
-  eval: true
-  warning: false
 format:
   html:
-    toc: false
+    number-sections: true
 ---
+
 
 Predicted land-cover polygons for the Luxembourg NUTS3 region (`LU000`), year 2024.
 Polygons are coloured by CLC+ Backbone land-cover class.
