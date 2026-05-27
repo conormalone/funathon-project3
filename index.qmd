@@ -117,7 +117,7 @@ Structure of the project:
 Install the project dependencies by running the following command in the terminal:
 
 ```
-uv sync
+source ./init.sh
 ```
 
 ## Select the Python interpreter
