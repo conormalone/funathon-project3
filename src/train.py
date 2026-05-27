@@ -37,16 +37,16 @@ from src.data.dataset import SegmentationDataset
 
 CONFIG = {
     "train_regions": [
-        "AT332",
-        "BE100",
-        "BE251",
-        "BG322",
-        "DEA54",
+        "IE041",
+        "IE052",
+        "IE053",
+        "IE061",
+        "IE062",
         "FRJ27",
-        "LU000",
+        "IE063",
     ],
     "train_years": ["2018", "2021"],
-    "test_regions": ["BE100", "DEA54", "LU000"],
+    "test_regions": ["IE042", "IE051", "LU000"],
     "test_year": "2021",
     "batch_size": 32,
     "test_batch_size": 16,
